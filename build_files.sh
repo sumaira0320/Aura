@@ -10,3 +10,6 @@ mkdir -p staticfiles
 echo "Vercel static build" > staticfiles/index.html
 echo "Running database migrations..."
 python manage.py migrate --noinput
+echo "Cleaning up build environment to reduce bundle size..."
+deactivate || true
+rm -rf venv_build
