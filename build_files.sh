@@ -7,5 +7,6 @@ pip install -r requirements.txt
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 mkdir -p staticfiles
+echo "Vercel static build" > staticfiles/index.html
 echo "Running database migrations..."
 python manage.py migrate --noinput
