@@ -1,0 +1,41 @@
+<div class="product-card {% if product.category.name == 'Books' %}book-card{% endif %}">
+    <div class="product-img-wrapper">
+        <a href="{{ product.get_absolute_url }}" style="display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></a>
+        
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+        {% else %}
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-light); position: absolute;">No Image</div>
+        {% endif %}
+        
+        <span class="product-badge">{{ product.category.name }}</span>
+        
+        <!-- Wishlist button -->
+        <form action="{% url 'store:wishlist_toggle' product.id %}" method="post" style="margin: 0; position: absolute; top: var(--sp-4); right: var(--sp-4); z-index: 10;">
+            {% csrf_token %}
+            <button type="submit" class="product-wishlist" aria-label="Toggle wishlist" style="position: static; border: none; background: transparent; cursor: pointer; padding: 0;">
+                <svg width="24" height="24" {% if request.user in product.users_wishlist.all %}fill="var(--primary)" stroke="var(--primary)"{% else %}fill="none" stroke="currentColor"{% endif %} viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            </button>
+        </form>
+    </div>
+    
+    <div class="product-info">
+        <div class="product-category">{{ product.category.name }}</div>
+        <a href="{{ product.get_absolute_url }}"><h3 class="product-title">{{ product.name }}</h3></a>
+        
+        <div class="product-meta">
+            <div>
+                <div class="product-price">${{ product.price }}</div>
+            </div>
+            
+            <form action="{% url 'store:cart_add' product.id %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="override" value="False">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.875rem;" {% if product.stock == 0 %}disabled{% endif %} aria-label="Add to cart">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

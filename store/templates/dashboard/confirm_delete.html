@@ -1,0 +1,22 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block topbar %}
+    <h1>{{ title }}</h1>
+    <p>Are you sure you want to proceed?</p>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:500px; text-align:center; padding:3rem 2rem;">
+    <div style="width:64px; height:64px; background:#fee2e2; color:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+        <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    </div>
+    <h3 style="font-size:1.25rem; margin:0 0 0.75rem;">Delete Confirmation</h3>
+    <p style="color:var(--text-muted); margin:0 0 2rem;">Are you sure you want to delete <strong>{{ object }}</strong>? This action cannot be undone.</p>
+    
+    <form method="post" style="display:flex; gap:1rem; justify-content:center;">
+        {% csrf_token %}
+        <a href="{% url cancel_url %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    </form>
+</div>
+{% endblock %}

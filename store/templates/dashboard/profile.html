@@ -1,0 +1,128 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_header %}
+<div class="premium-header">
+    <div class="header-left">
+        <div class="header-breadcrumb">Store <span>/</span> Profile</div>
+        <h1 class="header-title">My Profile</h1>
+        <p class="header-description">Manage your Store Admin account.</p>
+    </div>
+    <div class="header-right">
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8 mx-auto">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="card mb-4">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Profile Photo</h3>
+                
+                <div class="d-flex align-items-center" style="gap: 1.5rem;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 2rem; overflow: hidden; flex-shrink: 0;">
+                        {% if profile.profile_photo %}
+                            <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            {{ request.user.username|make_list|first|upper }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="d-flex" style="gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <label class="btn btn-secondary mb-0" style="cursor: pointer;">
+                                Change Photo
+                                <input type="file" name="profile_photo" style="display: none;" accept="image/*" onchange="this.form.submit()">
+                            </label>
+                            {% if profile.profile_photo %}
+                                <button type="submit" name="remove_photo" class="btn btn-danger">Remove Photo</button>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">JPG, GIF or PNG. Max size of 2MB.</small>
+                        {% if profile_form.profile_photo.errors %}
+                            <div class="text-danger mt-1" style="font-size:0.75rem;">{{ profile_form.profile_photo.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Personal Information</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ user_form.first_name.id_for_label }}">First Name</label>
+                        {{ user_form.first_name }}
+                        {% if user_form.first_name.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ user_form.first_name.errors|striptags }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+                        {{ user_form.last_name }}
+                        {% if user_form.last_name.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ user_form.last_name.errors|striptags }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ user_form.email.id_for_label }}">Email Address</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ user_form.email.errors|striptags }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ profile_form.phone_number.id_for_label }}">Phone Number</label>
+                        {{ profile_form.phone_number }}
+                        {% if profile_form.phone_number.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ profile_form.phone_number.errors|striptags }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Account Information</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="{{ request.user.username }}" readonly style="background:#f8fafc; color:var(--text-muted);">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Role</label>
+                        <input type="text" class="form-control" value="{% if request.user.is_superuser %}Super Admin{% else %}Store Manager{% endif %}" readonly style="background:#f8fafc; color:var(--text-muted); font-weight:600;">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Account Status</label>
+                        <input type="text" class="form-control" value="{% if request.user.is_active %}Active{% else %}Inactive{% endif %}" readonly style="background:#f8fafc; color:var(--text-muted);">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Member Since</label>
+                        <input type="text" class="form-control" value="{{ request.user.date_joined|date:'M d, Y' }}" readonly style="background:#f8fafc; color:var(--text-muted);">
+                    </div>
+                    {% if request.user.last_login %}
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Last Login</label>
+                        <input type="text" class="form-control" value="{{ request.user.last_login|date:'M d, Y h:i A' }}" readonly style="background:#f8fafc; color:var(--text-muted);">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4" style="background:#f8fafc;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 style="margin: 0 0 0.25rem 0; font-size: 1rem;">Security</h4>
+                        <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted);">Manage your account password.</p>
+                    </div>
+                    <a href="{% url 'dashboard:password_change' %}" class="btn btn-secondary">Change Password</a>
+                </div>
+            </div>
+            
+            <div style="display:flex; justify-content:flex-end; gap:1rem;">
+                <a href="{% url 'dashboard:home' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="padding-left: 2rem; padding-right: 2rem;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), select, textarea').forEach(el => el.classList.add('form-control'));
+</script>
+{% endblock %}

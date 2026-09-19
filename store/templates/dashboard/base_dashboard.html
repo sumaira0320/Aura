@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Store Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-grid.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --navy: #0b1120;
+            --navy-hover: #1e293b;
+            --accent: #2563eb;
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0284c7;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--navy);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            box-shadow: 1px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 1rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-section {
+            padding: 0 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.03);
+            color: white;
+        }
+
+        .nav-link.active {
+            background-color: rgba(37,99,235,0.1);
+            color: #60a5fa;
+            border-left-color: var(--accent);
+        }
+
+        .nav-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            opacity: 0.7;
+        }
+        
+        .nav-link:hover svg, .nav-link.active svg { opacity: 1; }
+
+        .sidebar-spacer { flex: 1; }
+
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        
+        
+        
+        .topbar {
+            height: 72px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        
+        
+
+        .content-area {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        
+        /* Dropdown */
+        .admin-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .admin-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: background 0.2s;
+        }
+        .admin-dropdown-toggle:hover {
+            background: rgba(0,0,0,0.03);
+        }
+        .admin-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            min-width: 200px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .admin-dropdown-menu.show {
+            display: block;
+            animation: fadeIn 0.15s ease-out;
+        }
+        .admin-dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            background: #f8fafc;
+        }
+        .admin-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .admin-dropdown-item:hover {
+            background: #f1f5f9;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        
+        
+        /* Premium Page Header */
+        .premium-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            padding: 2rem 2.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent);
+            border-top-left-radius: var(--radius-xl);
+            border-bottom-left-radius: var(--radius-xl);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 600px;
+        }
+
+        .header-breadcrumb {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-breadcrumb span {
+            color: var(--text-muted);
+        }
+
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .header-description {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* UI Components */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 1.75rem;
+            transition: box-shadow 0.2s, transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-hover:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: 1px solid transparent;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary { background: var(--navy); color: white; border-color: var(--navy); }
+        .btn-primary:hover { background: var(--navy-hover); box-shadow: var(--shadow); border-color: var(--navy-hover); }
+        
+        .btn-secondary { background: white; color: var(--text-main); border-color: var(--border); box-shadow: var(--shadow-sm); }
+        .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; color: var(--navy); }
+
+        .btn-danger { background: white; color: var(--danger); border-color: var(--border); }
+        .btn-danger:hover { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #e0f2fe; color: #075985; }
+        .badge-secondary { background: #f1f5f9; color: #475569; }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -1.75rem;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .table th {
+            padding: 1rem 1.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            background: rgba(241, 245, 249, 0.4);
+        }
+
+        .table td {
+            padding: 1.25rem 1.75rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover { background-color: rgba(241, 245, 249, 0.4); }
+
+        /* Inputs */
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            color: var(--text-main);
+            transition: all 0.2s;
+            outline: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        /* KPI Cards */
+        .kpi-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+        }
+        
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+        
+        .kpi-icon.blue { background: #eff6ff; color: #2563eb; }
+        .kpi-icon.green { background: #f0fdf4; color: #059669; }
+        .kpi-icon.purple { background: #f5f3ff; color: #7c3aed; }
+        .kpi-icon.orange { background: #fffbeb; color: #d97706; }
+        
+        .kpi-content { flex: 1; }
+        .kpi-title { font-size: 0.875rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .kpi-value { font-size: 2rem; font-weight: 700; color: var(--text-main); line-height: 1; margin-bottom: 0.5rem; letter-spacing: -0.025em; }
+        .kpi-trend { font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.25rem; }
+        .kpi-trend.positive { color: var(--success); }
+        .kpi-trend.neutral { color: var(--text-muted); }
+
+        /* Alerts */
+        .toast-container { position: fixed; top: 1rem; right: 2rem; z-index: 1050; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast {
+            background: white;
+            border-left: 4px solid var(--navy);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideIn 0.3s ease forwards;
+        }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Mobile */
+        .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--navy); padding: 0.5rem; }
+        
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; }
+            .mobile-toggle { display: block; }
+            
+        
+        
+        .topbar { padding: 0 1rem; }
+            .content-area { padding: 1rem; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .empty-state svg { width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.3; color: var(--navy); }
+        .empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-main); margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+        .empty-state p { font-size: 0.875rem; margin: 0 0 1.5rem; max-width: 300px; margin-inline: auto; color: var(--text-muted); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'dashboard:home' %}" class="sidebar-brand">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            AURA
+        </a>
+
+        <div class="nav-section">
+            <div class="nav-label">Main Menu</div>
+            <a href="{% url 'dashboard:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                Dashboard
+            </a>
+            <a href="{% url 'dashboard:product_list' %}" class="nav-link {% if 'product' in request.resolver_match.url_name %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                Products
+            </a>
+            <a href="{% url 'dashboard:category_list' %}" class="nav-link {% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                Categories
+            </a>
+            <a href="{% url 'dashboard:order_list' %}" class="nav-link {% if 'order' in request.resolver_match.url_name %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                Orders
+            </a>
+            <a href="{% url 'dashboard:review_list' %}" class="nav-link {% if 'review' in request.resolver_match.url_name %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                Reviews
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-label">Reports</div>
+            <a href="{% url 'dashboard:analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Analytics
+            </a>
+            <a href="{% url 'dashboard:activity' %}" class="nav-link {% if request.resolver_match.url_name == 'activity' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Activity
+            </a>
+        </div>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="nav-section">
+            <a href="{% url 'store:product_list' %}" class="nav-link">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Storefront
+            </a>
+            <a href="{% url 'store:logout' %}" class="nav-link">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+
+
+            </div>
+            <div class="admin-dropdown">
+                <button class="admin-dropdown-toggle" onclick="document.getElementById('adminMenu').classList.toggle('show')">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">
+                        {{ request.user.username|make_list|first|upper }}
+                    </div>
+                    <div style="text-align: left; margin-right: 0.5rem; display: flex; flex-direction: column;">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--text-main); line-height: 1.2;">{{ request.user.username }}</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 500;">{% if request.user.is_superuser %}Super Admin{% else %}Store Manager{% endif %}</span>
+                    </div>
+                    <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="admin-dropdown-menu" id="adminMenu">
+                    <div class="admin-dropdown-header">
+                        <div style="font-weight: 600; color: var(--text-main);">{{ request.user.username }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            {% if request.user.is_superuser %}Super Admin{% else %}Store Manager{% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'dashboard:profile' %}" class="admin-dropdown-item">My Profile</a>
+                    <a href="{% url 'dashboard:password_change' %}" class="admin-dropdown-item">Change Password</a>
+                    <div style="border-top: 1px solid var(--border);"></div>
+                    <a href="{% url 'store:logout' %}" class="admin-dropdown-item" style="color: var(--danger);">Logout</a>
+                </div>
+            </div>
+            
+            <script>
+                // Close dropdown when clicking outside
+                window.addEventListener('click', function(e) {
+                    if (!e.target.closest('.admin-dropdown')) {
+                        document.getElementById('adminMenu').classList.remove('show');
+                    }
+                });
+            </script>
+        </header>
+
+        <main class="content-area">
+            {% block page_header %}{% endblock %}
+            {% if messages %}
+                <div class="toast-container">
+                    {% for message in messages %}
+                        <div class="toast {{ message.tags }}">
+                            {% if message.tags == 'success' %}
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-success"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            {% elif message.tags == 'error' %}
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-danger"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            {% endif %}
+                            <span style="font-size: 0.875rem; font-weight: 500;">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        document.querySelectorAll('.toast').forEach(t => t.style.display = 'none');
+                    }, 4000);
+                </script>
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

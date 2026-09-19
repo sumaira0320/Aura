@@ -1,0 +1,129 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}Checkout | Aura{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: var(--sp-8); letter-spacing: -0.02em;">Checkout</h1>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: var(--sp-8);">
+        <!-- Checkout Form -->
+        <div style="flex: 2; min-width: 300px;">
+            <div style="background: var(--bg-surface); padding: var(--sp-8); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--sp-6);">Shipping Information</h3>
+                
+                <form method="post" id="checkout-form">
+                    {% csrf_token %}
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                        <div>
+                            <label for="id_first_name" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">First Name</label>
+                            <input type="text" name="first_name" id="id_first_name" required value="{{ form.first_name.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                        <div>
+                            <label for="id_last_name" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">Last Name</label>
+                            <input type="text" name="last_name" id="id_last_name" required value="{{ form.last_name.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                        <div>
+                            <label for="id_email" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">Email</label>
+                            <input type="email" name="email" id="id_email" required value="{{ form.email.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                        <div>
+                            <label for="id_phone" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">Phone Number</label>
+                            <input type="text" name="phone" id="id_phone" required value="{{ form.phone.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: var(--sp-4);">
+                        <label for="id_address" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">Address</label>
+                        <input type="text" name="address" id="id_address" required value="{{ form.address.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                        <div>
+                            <label for="id_city" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">City</label>
+                            <input type="text" name="city" id="id_city" required value="{{ form.city.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                        <div>
+                            <label for="id_state" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">State/Province</label>
+                            <input type="text" name="state" id="id_state" required value="{{ form.state.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-8);">
+                        <div>
+                            <label for="id_postal_code" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">Postal/ZIP Code</label>
+                            <input type="text" name="postal_code" id="id_postal_code" required value="{{ form.postal_code.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                        <div>
+                            <label for="id_country" style="display: block; font-weight: 600; margin-bottom: var(--sp-2);">Country</label>
+                            <input type="text" name="country" id="id_country" required value="{{ form.country.value|default_if_none:'' }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        </div>
+                    </div>
+                    
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--sp-4); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--border);">Payment Information</h3>
+                    
+                    <div style="background: var(--bg-alt); padding: var(--sp-4); border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: var(--sp-8);">
+                        <label style="display: flex; align-items: center; gap: var(--sp-2); cursor: pointer; font-weight: 600;">
+                            <input type="radio" name="payment_method" value="demo" checked style="width: 1.25rem; height: 1.25rem;">
+                            Demo Payment Flow
+                        </label>
+                        <p style="margin-top: var(--sp-2); font-size: 0.875rem; color: var(--text-muted); padding-left: 2rem;">
+                            This is a portfolio project. No real payment information will be collected or processed. Select this option to simulate a successful checkout.
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; justify-content: center;">
+                        Confirm Order
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div style="flex: 1; min-width: 300px;">
+            <div style="background: var(--bg-surface); padding: var(--sp-6); border-radius: var(--radius-lg); border: 1px solid var(--border); position: sticky; top: 6rem; box-shadow: var(--shadow-md);">
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--sp-4); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--border);">Order Summary</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: var(--sp-4); margin-bottom: var(--sp-6);">
+                    {% for item in cart %}
+                    <div style="display: flex; gap: var(--sp-4); align-items: center;">
+                        <div style="width: 60px; height: 60px; flex-shrink: 0; background: var(--bg-alt); border-radius: var(--radius-sm); overflow: hidden; position: relative;">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% endif %}
+                            <span style="position: absolute; top: -5px; right: -5px; background: var(--text-main); color: var(--bg-main); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">{{ item.quantity }}</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem;">{{ item.product.name }}</h4>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">${{ item.price }}</div>
+                        </div>
+                        <div style="font-weight: 600;">
+                            ${{ item.total_price }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--sp-2); color: var(--text-muted);">
+                    <span>Subtotal</span>
+                    <span>${{ subtotal }}</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--sp-4); color: var(--text-muted);">
+                    <span>Shipping</span>
+                    <span>{% if shipping_cost == 0 %}Free{% else %}${{ shipping_cost|floatformat:2 }}{% endif %}</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.5rem; padding-top: var(--sp-4); border-top: 1px solid var(--border);">
+                    <span>Total</span>
+                    <span>${{ final_total|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

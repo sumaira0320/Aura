@@ -1,0 +1,28 @@
+{% extends "store/base.html" %}
+{% block title %}My Wishlist | Aura{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16);">
+    <div style="margin-bottom: var(--sp-8); border-bottom: 1px solid var(--border); padding-bottom: var(--sp-4);">
+        <h1 style="font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: var(--sp-2);">My Wishlist</h1>
+        <p style="color: var(--text-muted); font-size: 1.125rem;">Items you've saved for later.</p>
+    </div>
+
+    {% if wishlist_products %}
+        <div class="grid">
+            {% for product in wishlist_products %}
+                {% include "store/product/includes/product_card.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--sp-16) var(--sp-4); text-align: center; box-shadow: var(--shadow-sm); max-width: 600px; margin: var(--sp-12) auto;">
+            <svg width="80" height="80" fill="none" stroke="var(--text-light)" stroke-width="1" viewBox="0 0 24 24" style="margin: 0 auto var(--sp-6);">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: var(--sp-4);">Your wishlist is empty</h2>
+            <p style="color: var(--text-muted); font-size: 1.125rem; margin-bottom: var(--sp-8);">Save your favorite items here to purchase them later.</p>
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.125rem;">Discover Products</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

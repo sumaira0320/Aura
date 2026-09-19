@@ -1,0 +1,144 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}Your Shopping Cart | Aura{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16);">
+    <div style="margin-bottom: var(--sp-8); border-bottom: 1px solid var(--border); padding-bottom: var(--sp-4); display: flex; justify-content: space-between; align-items: baseline;">
+        <h1 style="font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em;">Shopping Cart</h1>
+        <span style="color: var(--text-muted); font-size: 1.125rem;">{{ cart|length }} Item{% if cart|length != 1 %}s{% endif %}</span>
+    </div>
+    
+    {% if cart|length > 0 %}
+    <div style="display: grid; grid-template-columns: 1fr; gap: var(--sp-12);" class="cart-grid">
+        
+        <!-- Cart Items -->
+        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+            
+            <form action="{% url 'store:cart_clear' %}" method="post" onsubmit="return confirm('Are you sure you want to clear your cart?');" style="text-align: right;">
+                {% csrf_token %}
+                <button type="submit" style="color: var(--danger); background: none; border: none; font-weight: 600; cursor: pointer; text-decoration: underline;">Clear Entire Cart</button>
+            </form>
+                
+            <ul style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                {% for item in cart %}
+                    {% with product=item.product %}
+                    <li style="display: flex; gap: var(--sp-6); padding: var(--sp-6); background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); flex-wrap: wrap;">
+                        <!-- Product Image -->
+                        <div style="width: 140px; height: 140px; flex-shrink: 0; background: var(--bg-alt); border-radius: var(--radius-md); overflow: hidden; position: relative;">
+                            {% if product.image %}
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: contain; padding: var(--sp-2);">
+                                </a>
+                            {% else %}
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 0.75rem;">No Image</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Product Details -->
+                        <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column;">
+                            <div style="font-size: 0.875rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: var(--sp-1);">{{ product.category.name }}</div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--sp-2);"><a href="{{ product.get_absolute_url }}" style="color: var(--text-main);">{{ product.name }}</a></h3>
+                            <div style="color: var(--text-muted); font-size: 1.125rem; margin-bottom: var(--sp-4);">${{ item.price }}</div>
+                            
+                            <form action="{% url 'store:cart_remove' product.id %}" method="post" style="margin-top: auto;">
+                                {% csrf_token %}
+                                <button type="submit" style="color: var(--text-muted); background: none; border: none; display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; padding: 0;">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Quantity & Actions -->
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; min-width: 120px;">
+                            <div style="font-weight: 800; font-size: 1.5rem; color: var(--text-main);">
+                                ${{ item.total_price }}
+                            </div>
+                            
+                            <form action="{% url 'store:cart_add' product.id %}" method="post" style="display: flex; gap: var(--sp-2); align-items: center;">
+                                {% csrf_token %}
+                                <div style="display: flex; align-items: center; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); padding: 0.25rem;">
+                                    {{ item.update_quantity_form.quantity }}
+                                    {{ item.update_quantity_form.override }}
+                                </div>
+                                <button type="submit" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.875rem; border-radius: var(--radius-md);">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endwith %}
+                {% endfor %}
+            </ul>
+            
+            <a href="{% url 'store:product_list' %}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); font-weight: 600; margin-top: var(--sp-4);">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Continue Shopping
+            </a>
+        </div>
+        
+        <!-- Cart Summary -->
+        <div>
+            <div style="background: var(--bg-alt); padding: var(--sp-8); border-radius: var(--radius-lg); position: sticky; top: 6rem;">
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: var(--sp-6);">Order Summary</h3>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--sp-4); color: var(--text-main); font-size: 1.125rem;">
+                    <span>Subtotal</span>
+                    <span style="font-weight: 600;">${{ cart.get_total_price }}</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--sp-6); color: var(--text-muted); font-size: 1.125rem;">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--sp-8); font-weight: 800; font-size: 1.75rem; padding-top: var(--sp-6); border-top: 1px solid var(--border);">
+                    <span>Total</span>
+                    <span>${{ cart.get_total_price }}</span>
+                </div>
+                
+                <a href="{% url 'store:order_create' %}" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                    Proceed to Checkout
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+                
+                <div style="margin-top: var(--sp-6); display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    Secure Checkout Guarantee
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        @media (min-width: 992px) {
+            .cart-grid { grid-template-columns: 2fr 1fr; }
+        }
+        /* Fix the quantity input styling inside the form */
+        .cart-grid input[type="number"] {
+            border: none;
+            background: transparent;
+            padding: 0.5rem;
+            width: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .cart-grid input[type="number"]:focus {
+            outline: none;
+        }
+    </style>
+    
+    {% else %}
+    <div style="text-align: center; padding: var(--sp-16) 0; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+        <svg width="64" height="64" fill="none" stroke="var(--text-light)" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto var(--sp-6);">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: var(--sp-4);">Your cart is empty</h2>
+        <p style="color: var(--text-muted); font-size: 1.125rem; margin-bottom: var(--sp-8); max-width: 500px; margin-left: auto; margin-right: auto;">Looks like you haven't added any products to your cart yet. Discover our premium collection!</p>
+        <a href="{% url 'store:product_list' %}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.125rem;">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

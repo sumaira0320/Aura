@@ -1,0 +1,252 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}{{ product.name }} | Aura{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: var(--sp-4); padding-bottom: var(--sp-8);">
+    <!-- Breadcrumb -->
+    <div style="margin-bottom: var(--sp-4); display: flex; align-items: center; gap: var(--sp-2); font-size: 0.875rem; color: var(--text-muted);">
+        <a href="{% url 'store:product_list' %}" style="color: var(--text-main); font-weight: 500;">Home</a>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <a href="{{ product.category.get_absolute_url }}" style="color: var(--text-main); font-weight: 500;">{{ product.category.name }}</a>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <span>{{ product.name }}</span>
+    </div>
+
+    <!-- Product Top Section -->
+    <style>
+        .product-detail-grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-12); margin-bottom: var(--sp-12); }
+        @media (min-width: 768px) {
+            .product-detail-grid { grid-template-columns: 45% 55%; }
+        }
+    </style>
+    <div class="product-detail-grid">
+        
+        <!-- Left: Image Gallery -->
+        <div style="background: var(--bg-surface); border-radius: var(--radius-lg); padding: var(--sp-8); border: 1px solid var(--border); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; position: relative; min-height: 300px;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 600px; object-fit: contain;">
+            {% else %}
+                <div style="height: 400px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">No Image</div>
+            {% endif %}
+            
+        </div>
+
+        <!-- Right: Product Info -->
+        <div style="display: flex; flex-direction: column;">
+            <div style="font-size: 0.875rem; text-transform: uppercase; color: var(--accent); font-weight: 700; letter-spacing: 0.05em; margin-bottom: var(--sp-3);">
+                {{ product.category.name }}
+            </div>
+            
+            <h1 style="font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: var(--sp-4); letter-spacing: -0.02em; color: var(--text-main);">{{ product.name }}</h1>
+            
+            <div style="display: flex; align-items: center; gap: var(--sp-6); margin-bottom: var(--sp-6); padding-bottom: var(--sp-6); border-bottom: 1px solid var(--border);">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">
+                    ${{ product.price }}
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.25rem; color: #fbbf24;">
+                    {% with avg_rating=product.get_average_rating %}
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= avg_rating %}
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            {% else %}
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                    <a href="#reviews" style="color: var(--text-muted); font-size: 0.95rem; margin-left: var(--sp-2); font-weight: 500; text-decoration: underline;">{{ product.get_review_count }} Reviews</a>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: var(--sp-8);">
+                <p style="color: var(--text-muted); font-size: 1.125rem; line-height: 1.7;">
+                    {{ product.description|striptags|truncatewords:25 }}
+                </p>
+            </div>
+            
+            <div style="background: var(--bg-alt); padding: var(--sp-6); border-radius: var(--radius-lg); margin-bottom: var(--sp-8);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-4);">
+                    <span style="font-weight: 600; color: var(--text-main);">Availability:</span>
+                    <span style="font-weight: 600; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.875rem; {% if product.stock > 0 %}background: rgba(16, 185, 129, 0.1); color: var(--success);{% else %}background: rgba(239, 68, 68, 0.1); color: var(--danger);{% endif %}">
+                        {% if product.stock > 0 %}In Stock ({{ product.stock }}){% else %}Out of Stock{% endif %}
+                    </span>
+                </div>
+                
+                <div style="display: flex; gap: var(--sp-4); align-items: stretch;">
+                    <form action="{% url 'store:cart_add' product.id %}" method="post" style="display: flex; gap: var(--sp-4); align-items: flex-end; flex: 1;">
+                        {% csrf_token %}
+                        <div style="width: 120px;">
+                            <label for="id_quantity" style="display:block; font-size:0.875rem; font-weight:600; color:var(--text-main); margin-bottom:0.5rem;">Quantity</label>
+                            <select name="quantity" id="id_quantity" style="width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); font-size: 1rem;">
+                                {% for i in "123456789" %}
+                                    {% if forloop.counter <= product.stock %}
+                                    <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if product.stock >= 10 %}
+                                <option value="10">10</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                        <input type="hidden" name="override" value="False">
+                        <button type="submit" class="btn btn-primary" style="flex: 1; padding: 1rem; font-size: 1.125rem; border-radius: var(--radius-md);" {% if product.stock == 0 %}disabled{% endif %}>
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem; vertical-align: middle; display: inline-block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            {% if product.stock > 0 %}Add to Cart{% else %}Out of Stock{% endif %}
+                        </button>
+                    </form>
+                    
+                    <form action="{% url 'store:wishlist_toggle' product.id %}" method="post" style="display: flex; align-items: flex-end;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline" aria-label="Toggle wishlist" style="padding: 1rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; height: 52px; width: 52px;">
+                            <svg width="24" height="24" {% if request.user in product.users_wishlist.all %}fill="var(--primary)" stroke="var(--primary)"{% else %}fill="none" stroke="currentColor"{% endif %} viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: var(--sp-4);">
+                <div style="display: flex; align-items: center; gap: var(--sp-3); color: var(--text-muted); font-size: 0.95rem;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Free shipping on orders over $100</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--sp-3); color: var(--text-muted); font-size: 0.95rem;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>30-day money-back guarantee</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--sp-3); color: var(--text-muted); font-size: 0.95rem;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    <span>Secure checkout</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <style>
+        .three-col-bottom { display: grid; grid-template-columns: 1fr; gap: var(--sp-12); margin-bottom: var(--sp-12); }
+        @media (min-width: 992px) {
+            .three-col-bottom { grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-8); }
+        }
+        .bottom-section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: var(--sp-6); border-bottom: 2px solid var(--border); padding-bottom: var(--sp-3); }
+    </style>
+    
+    <div class="three-col-bottom">
+        
+        <!-- Column 1: Description -->
+        <div id="description" style="scroll-margin-top: 6rem;">
+            <h2 class="bottom-section-title">Product Information</h2>
+            <div style="color: var(--text-main); font-size: 1rem; line-height: 1.6;">
+                {{ product.description|safe }}
+            </div>
+        </div>
+        
+        <!-- Column 2: Quick Details -->
+        <div>
+            <h2 class="bottom-section-title">Quick Details</h2>
+            <div style="background: var(--bg-alt); padding: var(--sp-6); border-radius: var(--radius-lg); height: fit-content;">
+                <ul style="display: flex; flex-direction: column; gap: var(--sp-3); font-size: 0.95rem;">
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--sp-2);">
+                        <span style="color: var(--text-muted);">Category</span>
+                        <span style="font-weight: 600;">{{ product.category.name }}</span>
+                    </li>
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--sp-2);">
+                        <span style="color: var(--text-muted);">Item Number</span>
+                        <span style="font-weight: 600;">#{{ product.id|stringformat:"06d" }}</span>
+                    </li>
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: var(--sp-2);">
+                        <span style="color: var(--text-muted);">Availability</span>
+                        <span style="font-weight: 600; color: {% if product.stock > 0 %}var(--success){% else %}var(--danger){% endif %};">
+                            {% if product.stock > 0 %}In Stock{% else %}Out of Stock{% endif %}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Column 3: Reviews -->
+        <div id="reviews">
+            <h2 class="bottom-section-title">Customer Reviews ({{ product.get_review_count }})</h2>
+            
+            <div style="margin-bottom: var(--sp-6);">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--text-main);">{{ product.get_average_rating|floatformat:1 }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">out of 5</span></div>
+                <div style="display: flex; gap: 0.25rem; color: #fbbf24; margin-top: 0.25rem;">
+                    {% with avg_rating=product.get_average_rating %}
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= avg_rating %}
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            {% else %}
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
+
+            {% if not product.reviews.all %}
+                <div style="background: var(--bg-alt); padding: var(--sp-6); border-radius: var(--radius-lg); margin-bottom: var(--sp-6); text-align: center;">
+                    <p style="color: var(--text-muted);">No reviews yet. Be the first to review this product!</p>
+                </div>
+            {% else %}
+                <div style="margin-bottom: var(--sp-8); display: flex; flex-direction: column; gap: var(--sp-4);">
+                    {% for review in product.reviews.all %}
+                    <div style="background: var(--bg-surface); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <strong style="color: var(--text-main);">{{ review.user.username }}</strong>
+                            <span style="color: var(--text-muted); font-size: 0.875rem;">{{ review.created|date:"M d, Y" }}</span>
+                        </div>
+                        <div style="display: flex; gap: 0.125rem; color: #fbbf24; margin-bottom: 0.5rem;">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                {% else %}
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p style="color: var(--text-main); font-size: 0.95rem; margin: 0; line-height: 1.5;">{{ review.comment }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if request.user.is_authenticated %}
+                <div style="background: var(--bg-alt); padding: var(--sp-6); border-radius: var(--radius-lg);">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--sp-4);">Write a Review</h3>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div style="margin-bottom: var(--sp-4);">
+                            <label style="display:block; font-weight:500; font-size: 0.875rem; margin-bottom:0.5rem;">Rating</label>
+                            {{ review_form.rating }}
+                        </div>
+                        <div style="margin-bottom: var(--sp-4);">
+                            <label style="display:block; font-weight:500; font-size: 0.875rem; margin-bottom:0.5rem;">Review</label>
+                            <textarea name="comment" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; resize: vertical; font-size: 0.875rem;" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Submit Review</button>
+                    </form>
+                </div>
+            {% else %}
+                <div style="background: var(--bg-alt); padding: var(--sp-6); border-radius: var(--radius-lg); text-align: center;">
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: var(--sp-4);">Please log in to write a review.</p>
+                    <a href="{% url 'store:login' %}?next={{ request.path }}" class="btn btn-primary" style="display: inline-block;">Login</a>
+                </div>
+            {% endif %}
+        </div>
+        
+    </div>
+    <!-- Related Products -->
+    {% if related_products %}
+    <section style="margin-top: var(--sp-8); padding-top: var(--sp-8); border-top: 1px solid var(--border);">
+        <h2 class="section-title" style="font-size: 2rem;">
+            {% if product.category.name == 'Books' %}More Books You May Like{% else %}Related Products{% endif %}
+        </h2>
+        <div class="grid">
+            {% for product in related_products %}
+                {% include "store/product/includes/product_card.html" %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

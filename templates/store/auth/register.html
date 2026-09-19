@@ -1,0 +1,45 @@
+{% extends "store/base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 600px; padding: var(--sp-12) var(--sp-4);">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--sp-8); box-shadow: var(--shadow-sm);">
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: var(--sp-2); text-align: center;">Create an Account</h2>
+        <p style="color: var(--text-muted); margin-bottom: var(--sp-6); text-align: center;">Join Aura for a premium shopping experience</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% if register_form.non_field_errors %}
+                <div class="toast error" style="position: static; margin-bottom: var(--sp-4); width: 100%;">
+                    {{ register_form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            {% for field in register_form %}
+            <div style="margin-bottom: var(--sp-4);">
+                <label for="{{ field.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">
+                    {{ field.label }} {% if field.field.required %}<span style="color: var(--danger);">*</span>{% endif %}
+                </label>
+                <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="search-input" style="border-radius: var(--radius-md); padding-left: 1rem; width: 100%; {% if field.errors %}border-color: var(--danger);{% endif %}" {% if field.field.required %}required{% endif %}>
+                
+                {% if field.help_text %}
+                    <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">{{ field.help_text|safe }}</p>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <p style="font-size: 0.875rem; color: var(--danger); margin-top: 0.25rem;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            
+            <button class="btn btn-primary" type="submit" style="width: 100%; margin-top: var(--sp-4);">Register</button>
+        </form>
+        
+        <div style="margin-top: var(--sp-6); text-align: center; border-top: 1px solid var(--border); padding-top: var(--sp-6);">
+            <p style="color: var(--text-muted); font-size: 0.875rem;">
+                Already have an account? <a href="{% url 'store:login' %}" style="color: var(--accent); font-weight: 600;">Log in here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

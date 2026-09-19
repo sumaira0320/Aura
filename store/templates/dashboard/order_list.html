@@ -1,0 +1,77 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_header %}
+<div class="premium-header">
+    <div class="header-left">
+        <div class="header-breadcrumb">Store <span>/</span> Orders</div>
+        <h1 class="header-title">Orders</h1>
+        <p class="header-description">Manage and process customer orders.</p>
+    </div>
+    <div class="header-right">
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <form method="get" class="d-flex" style="max-width:400px; gap:0.5rem;">
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by Order ID or Name...">
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+    <div class="table-responsive" style="margin:0;">
+        <table class="table" style="margin:0;">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in page_obj %}
+                <tr>
+                    <td style="font-family:monospace; font-weight:600;">#{{ order.order_number }}</td>
+                    <td class="text-muted">{{ order.created|date:"M d, Y H:i" }}</td>
+                    <td style="font-weight:500;">{{ order.first_name }} {{ order.last_name }}</td>
+                    <td style="font-weight:600;">${{ order.final_total }}</td>
+                    <td>
+                        {% if order.payment_status == 'Completed' %}<span class="badge badge-success">Paid</span>
+                        {% elif order.payment_status == 'Failed' %}<span class="badge badge-danger">Failed</span>
+                        {% else %}<span class="badge badge-warning">Pending</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if order.status == 'Pending' %}<span class="badge badge-warning">Pending</span>
+                        {% elif order.status == 'Processing' %}<span class="badge badge-info">Processing</span>
+                        {% elif order.status == 'Shipped' %}<span class="badge badge-primary" style="background:var(--accent);color:white;">Shipped</span>
+                        {% elif order.status == 'Delivered' %}<span class="badge badge-success">Delivered</span>
+                        {% else %}<span class="badge badge-secondary">{{ order.status }}</span>{% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'dashboard:order_detail' order.id %}" class="btn btn-secondary" style="padding:0.25rem 0.75rem; font-size:0.75rem;">View Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            <h3>No orders found</h3>
+                            <p>There are no orders matching your criteria.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% include 'dashboard/pagination.html' %}
+{% endblock %}

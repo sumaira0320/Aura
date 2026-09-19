@@ -1,0 +1,43 @@
+{% extends "store/base.html" %}
+{% block title %}Edit Profile | Aura{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding: var(--sp-12) var(--sp-4);">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--sp-8); box-shadow: var(--shadow-sm);">
+        <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: var(--sp-2);">Edit Profile</h1>
+        <p style="color: var(--text-muted); margin-bottom: var(--sp-6);">Update your personal information.</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="toast error" style="position: static; margin-bottom: var(--sp-4); width: 100%;">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            {% for field in form %}
+            <div style="margin-bottom: var(--sp-4);">
+                <label for="{{ field.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">
+                    {{ field.label }} {% if field.field.required %}<span style="color: var(--danger);">*</span>{% endif %}
+                </label>
+                <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="search-input" style="border-radius: var(--radius-md); padding-left: 1rem; {% if field.errors %}border-color: var(--danger);{% endif %}" {% if field.field.required %}required{% endif %}>
+                
+                {% if field.help_text %}
+                    <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">{{ field.help_text }}</p>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <p style="font-size: 0.875rem; color: var(--danger); margin-top: 0.25rem;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            
+            <div style="display: flex; gap: var(--sp-4); margin-top: var(--sp-8);">
+                <a href="{% url 'store:profile' %}" class="btn btn-outline" style="flex: 1;">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_header %}
+<div class="premium-header">
+    <div class="header-left">
+        <div class="header-breadcrumb">Store <span>/</span> Dashboard</div>
+        <h1 class="header-title">Dashboard</h1>
+        <p class="header-description">Overview of your store's performance today.</p>
+    </div>
+    <div class="header-right">
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-hover">
+            <div class="kpi-card">
+                <div class="kpi-icon blue">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-title">Total Products</div>
+                    <div class="kpi-value">{{ total_products }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-hover">
+            <div class="kpi-card">
+                <div class="kpi-icon green">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-title">Customers</div>
+                    <div class="kpi-value">{{ total_customers }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-hover">
+            <div class="kpi-card">
+                <div class="kpi-icon purple">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-title">Total Orders</div>
+                    <div class="kpi-value">{{ total_orders }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-hover">
+            <div class="kpi-card">
+                <div class="kpi-icon orange">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-title">Revenue</div>
+                    <div class="kpi-value">${{ total_revenue|floatformat:2 }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 style="font-size: 1.125rem; margin:0;">Recent Orders</h3>
+                <a href="{% url 'dashboard:order_list' %}" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">View All</a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td style="font-family: monospace; font-weight: 600;">
+                                <a href="{% url 'dashboard:order_detail' order.pk %}" style="text-decoration: none; color: var(--accent);">#{{ order.order_number }}</a>
+                            </td>
+                            <td>{{ order.first_name }} {{ order.last_name }}</td>
+                            <td class="text-muted">{{ order.created|date:"M d, Y" }}</td>
+                            <td style="font-weight: 600;">${{ order.final_total }}</td>
+                            <td>
+                                {% if order.status == 'Pending' %}<span class="badge badge-warning">Pending</span>
+                                {% elif order.status == 'Processing' %}<span class="badge badge-info">Processing</span>
+                                {% elif order.status == 'Shipped' %}<span class="badge badge-primary" style="background:#3b82f6;color:white;">Shipped</span>
+                                {% elif order.status == 'Delivered' %}<span class="badge badge-success">Delivered</span>
+                                {% else %}<span class="badge badge-secondary">{{ order.status }}</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-4 text-muted">No recent orders.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <h3 style="font-size: 1.125rem; margin:0 0 1rem 0;">Low Stock Alerts</h3>
+            {% if low_stock_products %}
+                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                {% for p in low_stock_products %}
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.75rem; background:#fff1f2; border: 1px solid #fecdd3; border-radius: var(--radius-md);">
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <div style="width:32px;height:32px; border-radius:4px; overflow:hidden; background:#e2e8f0; flex-shrink:0;">
+                                {% if p.image %}<img src="{{ p.image.url }}" style="width:100%;height:100%;object-fit:cover;">{% endif %}
+                            </div>
+                            <div>
+                                <a href="{% url 'dashboard:product_edit' p.id %}" style="color:var(--text-main); font-weight:600; text-decoration:none; font-size:0.875rem; display:block; line-height:1.2;">{{ p.name }}</a>
+                                <span style="font-size:0.75rem; color:#be123c;">Only {{ p.stock }} left</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state" style="padding: 2rem 0;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path></svg>
+                    <h4 style="margin:0 0 0.25rem; font-size:1rem; font-weight:600; color:var(--text-main);">All inventory levels are healthy</h4>
+                    <p style="margin-bottom:0;">No products require attention.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

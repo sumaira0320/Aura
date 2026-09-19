@@ -1,0 +1,112 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_header %}
+<div class="premium-header">
+    <div class="header-left">
+        <div class="header-breadcrumb">Store <span>/</span> Products <span>/</span> {% if form.instance.pk %}Edit{% else %}Add{% endif %}</div>
+        <h1 class="header-title">{% if form.instance.pk %}Edit Product{% else %}Add Product{% endif %}</h1>
+        <p class="header-description">{% if form.instance.pk %}Update the details of this product.{% else %}Create a new product in your catalog.{% endif %}</p>
+    </div>
+    <div class="header-right">
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8 mx-auto">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="card mb-4" style="padding: 2rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Basic Information</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.name.errors|striptags }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ form.slug.id_for_label }}">{{ form.slug.label }}</label>
+                        {{ form.slug }}
+                        <small class="text-muted d-block mt-1">Unique URL identifier.</small>
+                        {% if form.slug.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.slug.errors|striptags }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <label class="form-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.category.errors|striptags }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.description.errors|striptags }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4" style="padding: 2rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Pricing & Inventory</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }} ($)</label>
+                        {{ form.price }}
+                        {% if form.price.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.price.errors|striptags }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="{{ form.stock.id_for_label }}">{{ form.stock.label }}</label>
+                        {{ form.stock }}
+                        {% if form.stock.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.stock.errors|striptags }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4" style="padding: 2rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Media & Visibility</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-12 form-group">
+                        <label class="form-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                        <div style="padding: 1rem; border: 1px dashed var(--border); border-radius: var(--radius-md); background: #f8fafc;">
+                            {{ form.image }}
+                        </div>
+                        {% if form.image.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.image.errors|striptags }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 form-group">
+                        <div class="d-flex align-items-center" style="gap: 0.5rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                            {{ form.available }}
+                            <label class="form-label mb-0" for="{{ form.available.id_for_label }}" style="cursor:pointer; margin:0;">Active & Available</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 form-group">
+                        <div class="d-flex align-items-center" style="gap: 0.5rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md);">
+                            {{ form.featured }}
+                            <label class="form-label mb-0" for="{{ form.featured.id_for_label }}" style="cursor:pointer; margin:0;">Featured Product</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display:flex; justify-content:flex-end; gap:1rem;">
+                <a href="{% url 'dashboard:product_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="padding-left: 2rem; padding-right: 2rem;">{% if form.instance.pk %}Save Changes{% else %}Create Product{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), select, textarea').forEach(el => el.classList.add('form-control'));
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.style.width = '18px');
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.style.height = '18px');
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_header %}
+<div class="premium-header">
+    <div class="header-left">
+        <div class="header-breadcrumb">Store <span>/</span> Categories <span>/</span> {% if form.instance.pk %}Edit{% else %}Add{% endif %}</div>
+        <h1 class="header-title">{% if form.instance.pk %}Edit Category{% else %}Add Category{% endif %}</h1>
+        <p class="header-description">{% if form.instance.pk %}Update the details of this category.{% else %}Create a new category.{% endif %}</p>
+    </div>
+    <div class="header-right">
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-6 mx-auto">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="card mb-4" style="padding: 2rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">Category Details</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-12 form-group">
+                        <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.name.errors|striptags }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <label class="form-label" for="{{ form.slug.id_for_label }}">{{ form.slug.label }}</label>
+                        {{ form.slug }}
+                        <small class="text-muted d-block mt-1">Unique URL identifier (lowercase, no spaces).</small>
+                        {% if form.slug.errors %}<div class="text-danger mt-1" style="font-size:0.75rem;">{{ form.slug.errors|striptags }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display:flex; justify-content:flex-end; gap:1rem;">
+                <a href="{% url 'dashboard:category_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="padding-left: 2rem; padding-right: 2rem;">{% if form.instance.pk %}Save Changes{% else %}Create Category{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), select, textarea').forEach(el => el.classList.add('form-control'));
+</script>
+{% endblock %}
