@@ -7,7 +7,7 @@ pip install -r requirements.txt
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 mkdir -p staticfiles
-echo "Vercel static build" > staticfiles/index.html
+touch staticfiles/.gitkeep
 echo "Running database migrations..."
 python manage.py migrate --noinput
 echo "Cleaning up build environment to reduce bundle size..."

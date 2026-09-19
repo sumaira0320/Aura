@@ -12,5 +12,11 @@
                 "distDir": "staticfiles"
             }
         }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "ecommerce/wsgi.py"
+        }
     ]
 }
