@@ -3,11 +3,7 @@
     "builds": [
         {
             "src": "ecommerce/wsgi.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "15mb",
-                "runtime": "python3.9"
-            }
+            "use": "@vercel/python"
         },
         {
             "src": "build_files.sh",
@@ -15,16 +11,6 @@
             "config": {
                 "distDir": "staticfiles"
             }
-        }
-    ],
-    "routes": [
-        {
-            "src": "/static/(.*)",
-            "dest": "/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "ecommerce/wsgi.py"
         }
     ]
 }
